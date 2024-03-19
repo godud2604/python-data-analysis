@@ -67,3 +67,45 @@ doc = doc.apply(func, axis=1)
 doc.head()
 
 # %%
+"""
+5. 중복 데이터 합치기
+- groupby() : 그룹별로 데이터를 집계하는 함수
+=> 동일한 컬럼값으로 묶어서 통계 또는 평균 등을 확인할 수 있다.
+"""
+
+df = pd.DataFrame({
+    '성별': ['남', '남', '남'],
+    '이름': ['David', 'Dave', 'Dave'],
+    '수학': [100, 50, 80],
+    '국어': [80, 70, 50]
+})
+
+df
+
+# %%
+# df.groupby('이름').mean() 메서드는 숫자 컬럼에 대해서만 계산 가능
+# 기존에는 df.groupby('이름').mean() 호출시, 숫자 컬럼 외에는 자동 제외하고 계산했으나, 최근 버전에서는 자동 제외되지 않으므로,
+# 다음과 같이 숫자 컬럼만을 강제로 선택한 후, df.groupby('이름').mean()을 호출하면 좋을 것 같다.
+selected_columns = ['이름', '수학', '국어']
+df = df[selected_columns]
+
+df.groupby('이름').mean()
+
+# %%
+df.groupby('이름').sum()
+
+# %%
+# 국가별 총 확진자수 구하기
+
+doc = pd.read_csv(PATH + '01-22-2020.csv', encoding='utf-8-sig')
+
+try:
+    doc = doc[['Province_State', 'Country_Region', 'Confirmed']]
+except:
+    doc = doc[['Province/State', 'Country/Region', 'Confirmed']]
+    doc.columns = ['Province_State', 'Country_Region', 'Confirmed']
+
+doc = doc.dropna(subset=['Confirmed'])
+doc = doc.astype({'Confirmed': 'int64'})
+doc.head()
+# %%
